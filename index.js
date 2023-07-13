@@ -1,4 +1,5 @@
 const express= require('express');
+const cookieParser= require('cookie-parser');
 const app =express();
 
 // defining the port number
@@ -7,8 +8,17 @@ const port= 8000;
 // Including layouts to the file
 const expressLayouts= require('express-ejs-layouts');
 
+// Used for session cookie
+// const session= require('express-session');
+// const passport= require('passport');
+// const passportLocal= require('./config/passport-local-strategy');
+
 // Including database
 const db= require('./config/mongoose');
+
+// reading through post request
+app.use(express.urlencoded());
+app.use(cookieParser());
 
 // Using expressLayouts
 app.use(expressLayouts);
@@ -29,6 +39,17 @@ app.use('/', require('./routes/index'));
 app.set('view engine', 'ejs');
 app.set('views', './views');
     
+// app.use(session({
+//     name: 'Codeial',
+//     // TODO: change secret before deployment in production mode
+//     secret: 'something',
+//     saveUninitialized: false,
+//     resave: false,
+//     cookie: {
+//         maxAge: (1000 * 60 * 100)
+//     }
+// }));
+
 // Connecting to server
 app.listen(port, function(err){
     if (err) {
