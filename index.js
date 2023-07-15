@@ -9,9 +9,10 @@ const port= 8000;
 const expressLayouts= require('express-ejs-layouts');
 
 // Used for session cookie
-// const session= require('express-session');
-// const passport= require('passport');
-// const passportLocal= require('./config/passport-local-strategy');
+const session= require('express-session');
+const passport= require('passport');
+const passportLocal= require('./config/passport-local-strategy');
+const MongoStore = require('connect-mongo')(session);
 
 // Including database
 const db= require('./config/mongoose');
@@ -32,27 +33,42 @@ app.set('layout extractScripts', true);
 app.set('layout extractImages', true);
 app.set('layout extractFonts', true);
 
-// Use express router
-app.use('/', require('./routes/index'));
 
 // Set up the view engine
 app.set('view engine', 'ejs');
 app.set('views', './views');
     
-// app.use(session({
-//     name: 'Codeial',
-//     // TODO: change secret before deployment in production mode
-//     secret: 'something',
-//     saveUninitialized: false,
-//     resave: false,
-//     cookie: {
-//         maxAge: (1000 * 60 * 100)
-//     }
-// }));
+app.use(session({
+    name: 'Codeial',
+    // TODO: change secret as a key before deployment in production mode
+    secret: 'something',
+    saveUninitialized: false,
+    resave: false,
+    cookie: {
+        maxAge: (1000 * 60 * 100)
+    },
+    store: new MongoStore(
+        {
+            mongooseConnection: db,
+            autoRemove: 'disabled'
+        },
+        function(err){
+            console.log(err || 'connect-mongodb setup ok');
+        }
+    )
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(passport.setAuthenticatedUser);
+
+// Use express router
+app.use('/', require('./routes/index'));
+
 
 // Connecting to server
 app.listen(port, function(err){
-    if (err) {
+    if (err) { 
         console.log(`Error in running the server: ${err}`);
         return; 
     }
