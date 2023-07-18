@@ -106,7 +106,7 @@ module.exports.destroySession = function (req, res) {
       console.log(err);
       return res.redirect("/"); // or handle the error in an appropriate way
     }
-    
+
     return res.redirect("/");
   });
 };
