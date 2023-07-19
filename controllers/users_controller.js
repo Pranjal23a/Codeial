@@ -20,10 +20,22 @@ module.exports.profile = function (req, res) {
   // } else {
   //   return res.redirect("/users/signIn");
   // }
-  return res.render("profile", {
-    title: "User Profile",
-  });
+  User.findById(req.params.id).then((user) => {
+    return res.render("profile", {
+      title: "User Profile",
+      profile_user: user
+    });
+  })
 };
+
+module.exports.update = function (req, res) {
+  User.findByIdAndUpdate(req.params.id, req.body).then((user) => {
+    return res.redirect('back');
+  }).catch((err) => {
+    console.log("Error!", err)
+    return res.status(401).send('Unauthorized');
+  })
+}
 
 // Render the sign up page
 module.exports.signUp = function (req, res) {
