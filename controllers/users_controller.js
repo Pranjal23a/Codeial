@@ -1,124 +1,95 @@
 const User = require("../models/user");
 
 // Showing User profile
-module.exports.profile = function (req, res) {
-  // if (req.cookies.user_id) {
-  //   User.findById(req.cookies.user_id)
-  //     .then((user) => {
-  //       if (user) {
-  //         return res.render("profile", {
-  //           title: "User Profile",
-  //           user: user,
-  //         });
-  //       }
-  //     })
-  //     .catch((err) => {
-  //       // Handle any errors that occur during the query
-  //       console.error(err);
-  //       return res.redirect("/users/signIn");
-  //     });
-  // } else {
-  //   return res.redirect("/users/signIn");
-  // }
-  User.findById(req.params.id).then((user) => {
+module.exports.profile = async function (req, res) {
+  try {
+    const user = await User.findById(req.params.id);
     return res.render("profile", {
       title: "User Profile",
       profile_user: user
     });
-  })
-};
+  } catch (err) {
+    console.log("Error!", err);
+    return res.status(500).send('Internal Server Error');
+  }
+}
 
-module.exports.update = function (req, res) {
-  User.findByIdAndUpdate(req.params.id, req.body).then((user) => {
+// Updating User profile
+module.exports.update = async function (req, res) {
+  try {
+    await User.findByIdAndUpdate(req.params.id, req.body);
     return res.redirect('back');
-  }).catch((err) => {
-    console.log("Error!", err)
+  } catch (err) {
+    console.log("Error!", err);
     return res.status(401).send('Unauthorized');
-  })
+  }
 }
 
 // Render the sign up page
-module.exports.signUp = function (req, res) {
+module.exports.signUp = async function (req, res) {
   if (req.isAuthenticated()) {
-    return res.redirect("/users/profile");
+    return res.redirect("/");
   }
-  return res.render("user_sign_up", {
-    title: "Codeial | Sign Up",
-  });
-};
+  try {
+    return res.render("user_sign_up", {
+      title: "Codeial | Sign Up",
+    });
+  } catch (err) {
+    console.log("Error!", err);
+    return res.status(500).send('Internal Server Error');
+  }
+}
 
-// Remder the signup page
-module.exports.signIn = function (req, res) {
+// Render the signIn page
+module.exports.signIn = async function (req, res) {
   if (req.isAuthenticated()) {
-    return res.redirect("/users/profile");
+    return res.redirect("/");
   }
-  return res.render("user_sign_in", {
-    title: "Codeial | Sign In",
-  });
+  try {
+    return res.render("user_sign_in", {
+      title: "Codeial | Sign In",
+    });
+  } catch (err) {
+    console.log("Error!", err);
+    return res.status(500).send('Internal Server Error');
+  }
 };
 
 // get the sign up data
-module.exports.create = function (req, res) {
+module.exports.create = async function (req, res) {
   if (req.body.password != req.body.confirm_password) {
     return res.redirect("back");
   }
 
-  User.findOne({ email: req.body.email })
-    .then((user) => {
-      if (!user) {
-        return User.create(req.body);
-      } else {
-        throw new Error("User already exists");
-      }
-    })
-    .then((user) => {
+  try {
+    const user = await User.findOne({ email: req.body.email });
+    if (!user) {
+      await User.create(req.body);
       return res.redirect("/users/signIn");
-    })
-    .catch((err) => {
-      console.log("Error in signing up:", err);
-      return res.redirect("back");
-    });
+    } else {
+      throw new Error("User already exists");
+    }
+  } catch (err) {
+    console.log("Error in signing up:", err);
+    return res.redirect("back");
+  }
+}
+
+// Creating session
+module.exports.createSession = async function (req, res) {
+  req.flash('success', 'Logged in Successfully!');
+  return res.redirect("/");
 };
 
-// sign in and create session for the user
-// module.exports.createSession = async function (req, res) {
-//   try {
-//     // steps to authenticate
-//     // find the user
-//     const user = await User.findOne({ email: req.body.email });
-
-//     // handle user found
-//     if (user) {
-//       // handle password which don't match
-//       if (user.password != req.body.password) {
-//         return res.redirect("back");
-//       }
-
-//       // handle session creation
-//       res.cookie("user_id", user.id);
-//       return res.redirect("/users/profile");
-//     } else {
-//       // handle user not found
-//       return res.redirect("back");
-//     }
-//   } catch (err) {
-//     console.log("Error in finding user in signing in!!");
-//     // handle the error appropriately
-//     return res.status(500).send("Internal Server Error");
-//   }
-// };
-module.exports.createSession = function (req, res) {
-  return res.redirect("/users/profile");
-};
-
-module.exports.destroySession = function (req, res) {
+// Destoying session
+module.exports.destroySession = async function (req, res) {
   req.logout(function (err) {
     if (err) {
       // Handle any error that occurred during logout
       console.log(err);
       return res.redirect("/"); // or handle the error in an appropriate way
     }
-
+    req.flash('success', 'You have Logged Out!');
     return res.redirect("/");
   });
 };
