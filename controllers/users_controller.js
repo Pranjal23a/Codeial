@@ -31,7 +31,7 @@ module.exports.update = async function (req, res) {
           if (user.avatar) {
             fs.unlinkSync(path.join(__dirname, '..', user.avatar));
           }
-          // Saving the path of uploaded file into avatar field in user
+          // Saving the path of uploaded file into avatar field in user 
           user.avatar = User.avatarPath + '/' + req.file.filename;
         }
         user.save();
