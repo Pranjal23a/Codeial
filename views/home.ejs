@@ -28,6 +28,7 @@
             </p>
             <%}%>
     </section>
+    <%- include('_chat_box') %>
 </div>
 <script src="/js/home._posts.js"></script>
 
@@ -38,3 +39,5 @@
         let toggleLike = new ToggleLike(self);
     });
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.1/socket.io.js"></script>
+<script src="/js/chat_engine.js"></script>
