@@ -1,7 +1,9 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const app = express();
+const cors = require('cors');
 
+app.use(cors());
 // defining the port number
 const port = 8000;
 
@@ -23,8 +25,11 @@ const customMware = require('./config/middleware');
 // Setup the chat server to be used with socket.io
 const chatServer = require('http').Server(app);
 const chatSockets = require('./config/chat_sockets').chatSockets(chatServer);
-chatServer.listen(5000);
-console.log('Chat server is listening on port 5000');
+chatServer.listen(5000, () => {
+  console.log('Chat server is listening on port 5000');
+});
+
+// app.use(cors());
 
 app.use(
   sassMiddleware({
