@@ -1,4 +1,5 @@
 const express = require("express");
+const env = require('./config/environment');
 const cookieParser = require("cookie-parser");
 const app = express();
 const cors = require('cors');
@@ -29,12 +30,12 @@ chatServer.listen(5000, () => {
   console.log('Chat server is listening on port 5000');
 });
 
-// app.use(cors());
+const path = require('path');
 
 app.use(
   sassMiddleware({
-    src: "./assets/scss",
-    dest: "./assets/css",
+    src: path.join(__dirname, env.asset_path, 'scss'),
+    dest: path.join(__dirname, env.asset_path, 'css'),
     debud: true,
     outputStyle: "extended",
     prefix: "/css",
@@ -45,10 +46,11 @@ app.use(
 const db = require("./config/mongoose");
 
 // reading through post request
-app.use(express.urlencoded());
+app.use(express.urlencoded({ extended: true }));
+
 app.use(cookieParser());
 
-app.use(express.static('./assets'));
+app.use(express.static(env.asset_path));
 // Make the uploads path available to the browser
 app.use('/uploads', express.static(__dirname + '/uploads'));
 
