@@ -1,4 +1,4 @@
-<link rel="stylesheet" type="text/css" href="/css/home.css">
+<link rel="stylesheet" type="text/css" href="<%= assetPath('css/home.css')%>">
 
 <div id="home-container">
     <section id="feed-posts">
@@ -30,9 +30,9 @@
     </section>
     <%- include('_chat_box') %>
 </div>
-<script src="/js/home._posts.js"></script>
+<script src="<%= assetPath('js/home._posts.js')%>"></script>
 
-<script src="js/toggle_likes.js"></script>
+<script src="<%= assetPath('js/toggle_likes.js')%>"></script>
 <script>
     $('.toggle-like-button').each(function () {
         let self = this;
@@ -42,7 +42,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script>
 
 
-<script src="/js/chat_engine.js"></script>
+<script src="<%= assetPath('js/chat_engine.js')%>"></script>
 
 <% if(locals.user){ %>
     <script>

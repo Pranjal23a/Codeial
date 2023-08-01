@@ -1,9 +1,10 @@
 const express = require("express");
 const env = require('./config/environment');
+const logger = require('morgan');
 const cookieParser = require("cookie-parser");
 const app = express();
 const cors = require('cors');
-
+require('./config/view-helper')(app);
 app.use(cors());
 // defining the port number
 const port = 8000;
@@ -31,16 +32,17 @@ chatServer.listen(5000, () => {
 });
 
 const path = require('path');
-
-app.use(
-  sassMiddleware({
-    src: path.join(__dirname, env.asset_path, 'scss'),
-    dest: path.join(__dirname, env.asset_path, 'css'),
-    debud: true,
-    outputStyle: "extended",
-    prefix: "/css",
-  })
-);
+if (env.name == 'development') {
+  app.use(
+    sassMiddleware({
+      src: path.join(__dirname, env.asset_path, 'scss'),
+      dest: path.join(__dirname, env.asset_path, 'css'),
+      debud: true,
+      outputStyle: "extended",
+      prefix: "/css",
+    })
+  );
+}
 
 // Including database
 const db = require("./config/mongoose");
@@ -53,12 +55,13 @@ app.use(cookieParser());
 app.use(express.static(env.asset_path));
 // Make the uploads path available to the browser
 app.use('/uploads', express.static(__dirname + '/uploads'));
+app.use(logger(env.morgan.mode, env.morgan.options))
 
 // Using expressLayouts
 app.use(expressLayouts);
 
 // Including or using assets files
-app.use(express.static("./assets"));
+app.use(express.static(env.asset_path));
 
 // Extract style and scripts from sub pages into layouts
 app.set("layout extractStyles", true);
