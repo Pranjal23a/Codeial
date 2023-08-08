@@ -22,7 +22,7 @@ const development = {
         secure: false,
         auth: {
             user: 'pransharma011@gmail.com',
-            pass: 'gkrwynkjkgdoakfz'
+            pass: 'something'
         }
 
     },
